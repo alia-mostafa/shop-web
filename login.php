@@ -1,17 +1,7 @@
 <?php
-session_start();
-//connect to database
-$host = "localhost";
-$db_user = "root";   
-$db_pass = "";       
-$db_name = "myapp";
+include 'db.php';
 
-$mysqli = new mysqli($host, $db_user, $db_pass, $db_name);
 
-//check connection
-if ($mysqli->connect_errno) {
-    die("Failed to connect to MySQL: " . $mysqli->connect_error);
-}
 //input retrieval
 $user_input = trim($_POST['user_input'] ?? '');
 $password = $_POST['password'] ?? '';
