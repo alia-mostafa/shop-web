@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.details-box {
+    display: flex;
+    gap: 40px;
+    padding: 50px;
+    align-items: center;
+}
+
+#p-img {
+    width: 300px;
+    border-radius: 14px;
+}
+
+.info h2 {
+    margin-bottom: 10px;
+}
+
+.info h3 {
+    color: green;
+    margin-top: 15px;
+}
+
+.buy-btn {
+    background: #ff4d4d;
+    padding: 12px 20px;
+    border: none;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
