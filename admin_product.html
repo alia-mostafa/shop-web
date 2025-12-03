@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Products</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        direction: ltr;
+        margin: 0;
+        background: #f3f4f6;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: #222;
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    th {
+        background: #f1f1f1;
+        font-weight: bold;
+    }
+
+    tr:hover td {
+        background: #fafafa;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    button {
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        padding: 10px 18px;
+    }
+
+    .btn-add {
+        background: #28a745;
+        color: #fff;
+    }
+
+    .btn-update {
+        background: #007bff;
+        color: #fff;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .btn-logout {
+        background: #555;
+        color: #fff;
+    }
+
+    .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(2px);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal {
+        background: #fff;
+        width: 400px;
+        padding: 22px;
+        border-radius: 10px;
+    }
+
+    input, textarea {
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Product Management</h1>
+
+    <div class="top-bar">
+        <button class="btn-add" onclick="openModal()">Add Product</button>
+        <button class="btn-logout">Logout</button>
+    </div>
+
+    <table id="productTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price (EGP)</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+    </table>
+</div>
+
+<div class="modal-bg" id="modalBg">
+    <div class="modal">
+        <h3 id="modalTitle">Add Product</h3>
+
+        <input type="text" id="name" placeholder="Product name">
+        <textarea id="desc" placeholder="Product description"></textarea>
+        <input type="number" id="price" placeholder="Price">
+        <input type="number" id="qty" placeholder="Quantity">
+
+        <div class="modal-actions">
+            <button onclick="closeModal()">Cancel</button>
+            <button class="btn-add" id="saveBtn">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let products = [
+        { name: "Laptop", desc: "Core i7 - 16GB RAM", price: 22000, qty: 5 },
+        { name: "Headphones", desc: "Noise cancelling", price: 1750, qty: 12 }
+    ];
+
+    let editIndex = -1;
+
+    function renderTable() {
+        const tbody = document.querySelector("#productTable tbody");
+        tbody.innerHTML = "";
+        products.forEach((p, i) => {
+            const row = `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.desc}</td>
+                    <td>${p.price}</td>
+                    <td>${p.qty}</td>
+                    <td>
+                        <button class="btn-update" onclick="editProduct(${i})">Update</button>
+                        <button class="btn-delete" onclick="deleteProduct(${i})">Delete</button>
+                    </td>
+                </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function openModal() {
+        resetInputs();
+        editIndex = -1;
+        document.getElementById("modalTitle").innerText = "Add Product";
+        document.getElementById("saveBtn").innerText = "Save";
+        document.getElementById("modalBg").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("modalBg").style.display = "none";
+    }
+
+    function resetInputs() {
+        document.getElementById("name").value = "";
+        document.getElementById("desc").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("qty").value = "";
+    }
+
+    document.getElementById("saveBtn").onclick = function() {
+        const name = document.getElementById("name").value;
+        const desc = document.getElementById("desc").value;
+        const price = document.getElementById("price").value;
+        const qty = document.getElementById("qty").value;
+
+        if (!name || !desc || !price || !qty) return;
+
+        if (editIndex === -1) {
+            products.push({ name, desc, price, qty });
+        } else {
+            products[editIndex] = { name, desc, price, qty };
+        }
+
+        renderTable();
+        closeModal();
+    };
+
+    function editProduct(i) {
+        editIndex = i;
+        const p = products[i];
+
+        document.getElementById("modalTitle").innerText = "Update Product";
+        document.getElementById("saveBtn").innerText = "Update";
+
+        document.getElementById("name").value = p.name;
+        document.getElementById("desc").value = p.desc;
+        document.getElementById("price").value = p.price;
+        document.getElementById("qty").value = p.qty;
+
+        document.getElementById("modalBg").style.display = "flex";
+    }
+
+    function deleteProduct(i) {
+        products.splice(i, 1);
+        renderTable();
+    }
+
+    renderTable();
+</script>
+
+</body>
+</html>

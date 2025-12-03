@@ -1,6 +1,8 @@
 <?php
-session_start();
-//database connection
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $host = "localhost";
 $db_user = "root";   
 $db_pass = "";       

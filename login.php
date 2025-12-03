@@ -39,7 +39,7 @@ if(password_verify($password, $hashed_password)){
     $_SESSION['user_id'] = $id;
     $_SESSION['username'] = $username;
 
-    echo "Login successful! <a href='dashboard.php'>Go to Dashboard</a>";
+    echo "Login successful! <a href='homePage.html'>Go to HomePage</a>";
 } else {
     echo "Incorrect password. <a href='login.html'>Try again</a>";
 }

@@ -1,76 +1,68 @@
-const products = [
-    {
-        id: 1,
-        name: "Smartphone X100",
-        price: "$799.99",
-        desc: "Experience the latest technology with our powerful Smartphone X100.",
-        img: "71n1OfJ92YL.jpg"
-    },
-    {
-        id: 2,
-        name: "Wireless Headphones Pro",
-        price: "$199.99",
-        desc: "Enjoy crystal clear sound with no wires to hold you back.",
-        img: "shopping.webp"
-    },
-    {
-        id: 3,
-        name: "FitTrack Plus",
-        price: "$129.99",
-        desc: "Keep track of your health and fitness goals with this sleek tracker.",
-        img: "download (1).jpeg"
-    },
-    {
-        id: 4,
-        name: "SmartWatch Ultra",
-        price: "$349.99",
-        desc: "Stay connected and stylish with the SmartWatch Ultra.",
-        img: "download.jpeg"
-    },
-    {
-        id: 5,
-        name: "Laptop Pro 15",
-        price: "$1,299.99",
-        desc: "Ultra-fast performance, 15-inch display, powerful CPU and GPU for creators and gamers.",
-        img: "shopping (1).webp"
-    },
-    {
-        id: 6,
-        name: "4K Camera Pro",
-        price: "$899.99",
-        desc: "Capture stunning images and videos with this 4K professional camera.",
-        img: "download (2).jpeg"
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    if (!productId) {
+        alert("No product selected");
+        return;
     }
-];
 
-const params = new URLSearchParams(window.location.search);
-const id = parseInt(params.get("id"));
+    fetch(`get_product.php?id=${productId}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`Network error: ${res.status}`);
+            return res.json();
+        })
+        .then(product => {
 
-const product = products.find(p => p.id === id);
+            if (product.error) {
+                alert(product.error);
+                return;
+            }
 
-if (!product) {
-    alert("Product not found!");
-    window.location.href = "products.html";
-} else {
-    document.getElementById("pd-name").innerText = product.name;
-    document.getElementById("pd-price").innerText = product.price;
-    document.getElementById("pd-desc").innerText = product.desc;
-    document.getElementById("pd-img").src = product.img;
-}
+            const imgEl = document.getElementById('pd-img');
+            const nameEl = document.getElementById('pd-name');
+            const descEl = document.getElementById('pd-desc');
+            const priceEl = document.getElementById('pd-price');
 
-document.getElementById("btn-buy-confirm").addEventListener("click", () => {
-    if (confirm("Are you sure you want to buy this product?")) {
-        alert("Payment Successful!");
-    }
-});
+            if (imgEl) imgEl.src = product.primary_image || '';
+            if (nameEl) nameEl.textContent = product.name || 'No name';
+            if (descEl) descEl.textContent = product.description || 'No description';
+            if (priceEl) priceEl.textContent = product.price ? `$${product.price}` : 'Price unavailable';
 
-document.getElementById("btn-add-cart").addEventListener("click", () => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (!cart.some(p => p.id === product.id)) {
-        cart.push(product);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        alert("Product added to cart!");
-    } else {
-        alert("This product is already in the cart.");
-    }
+            const buyBtn = document.getElementById("btn-buy-confirm");
+            if (buyBtn) {
+                buyBtn.addEventListener("click", () => {
+                    const confirmBuy = confirm("Are you sure you want to buy this product?");
+                    if (confirmBuy) {
+                        alert("Payment Successful! Redirecting to checkout.");
+                    }
+                });
+            }
+
+            const addBtn = document.getElementById('btn-add-cart');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    fetch('add_to_cart.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `product_id=${productId}&quantity=1`
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error(`Network error: ${res.status}`);
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Product added to cart!');
+                            window.location.href = "cart.html";
+                        } else {
+                            alert('Error adding product to cart.');
+                        }
+                    })
+                    .catch(err => console.error('Error adding to cart:', err));
+                });
+            }
+
+        })
+        .catch(err => console.error('Error loading product:', err));
 });
