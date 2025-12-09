@@ -1,0 +1,35 @@
+body {
+font-family: Arial, sans-serif;
+margin: 40px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+}
+
+table, th, td {
+border: 1px solid #ccc;
+}
+
+th {
+background: #f2f2f2;
+}
+
+td, th {
+padding: 10px;
+text-align: left;
+}
+
+.btn {
+padding: 6px 10px;
+text-decoration: none;
+background: dodgerblue;
+color: #fff;
+border-radius: 4px;
+}
+
+.btn-danger {
+background: red;
+}
